@@ -11,12 +11,14 @@ import { Provider } from '../types/Provider';
  */
 const useProcessBlock = (
 	refs: {
+		blockLoadedRef: React.MutableRefObject<boolean>;
 		providerRef: React.MutableRefObject<Provider | null>;
 		messagesRef: React.MutableRefObject<Message[]>;
 		outputTypeRef: React.MutableRefObject<'character' | 'chunk' | 'full'>;
 		outputSpeedRef: React.MutableRefObject<number>;
 		historySizeRef: React.MutableRefObject<number>;
 		initialMessageRef: React.MutableRefObject<string>;
+		waitForUserInputRef: React.MutableRefObject<boolean>;
 		errorMessageRef: React.MutableRefObject<string>;
 		onUserMessageRef: React.MutableRefObject<((msg: Message) => Promise<string | null>) | null>;
 		onKeyDownRef: React.MutableRefObject<((e: KeyboardEvent) => Promise<string | null>) | null>;

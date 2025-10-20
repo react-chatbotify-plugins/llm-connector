@@ -12,6 +12,7 @@ export type LlmConnectorBlock = Block & {
 		historySize?: number;
 		initialMessage?: string;
 		errorMessage?: string;
+		waitForUserInput?: boolean;
 		stopConditions?: {
 			onUserMessage?: (message: Message) => Promise<string | null>;
 			onKeyDown?: (event: KeyboardEvent) => Promise<string | null>;

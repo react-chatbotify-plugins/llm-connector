@@ -23,19 +23,28 @@ import { useMessageHandler } from '../hooks/useMessageHandler';
  * @param pluginConfig configurations for the plugin
  */
 const useRcbPlugin = (pluginConfig?: PluginConfig): ReturnType<Plugin> => {
+	const blockLoadedRef = useRef<boolean>(false);
 	const messagesRef = useRef<Message[]>([]);
 	const providerRef = useRef<Provider | null>(null);
 	const outputTypeRef = useRef<'character' | 'chunk' | 'full'>('chunk');
 	const outputSpeedRef = useRef<number>(30);
 	const historySizeRef = useRef<number>(0);
 	const initialMessageRef = useRef<string>('');
+	const waitForUserInputRef = useRef<boolean>(true);
 	const errorMessageRef = useRef<string>('Unable to get response, please try again.');
 	const onUserMessageRef = useRef<((msg: Message) => Promise<string | null>) | null>(null);
 	const onKeyDownRef = useRef<((e: KeyboardEvent) => Promise<string | null>) | null>(null);
 
 	const { getFlow } = useFlow();
 	const { speakAudio } = useAudio();
-	const { messages, injectMessage, simulateStreamMessage, streamMessage, endStreamMessage } = useMessages();
+	const { 
+		messages,
+		injectMessage,
+		simulateStreamMessage,
+		streamMessage,
+		endStreamMessage,
+		getMessages
+	} = useMessages();
 	const { goToPath } = usePaths();
 	const { toggleTextAreaDisabled, focusTextArea } = useTextArea();
 	const { toggleIsBotTyping, getIsChatBotVisible } = useChatWindow();
@@ -54,18 +63,21 @@ const useRcbPlugin = (pluginConfig?: PluginConfig): ReturnType<Plugin> => {
 		outputSpeedRef.current = block.llmConnector?.outputSpeed ?? 30;
 		historySizeRef.current = block.llmConnector?.historySize ?? 0;
 		initialMessageRef.current = block.llmConnector?.initialMessage ?? '';
+		waitForUserInputRef.current = block.llmConnector?.waitForUserInput ?? true;
 		errorMessageRef.current = block.llmConnector?.errorMessage ?? 'Unable to get response, please try again.';
 		onUserMessageRef.current = block.llmConnector?.stopConditions?.onUserMessage ?? null;
 		onKeyDownRef.current = block.llmConnector?.stopConditions?.onKeyDown ?? null;
 	});
 
 	const refs = {
+		blockLoadedRef,
 		providerRef,
 		messagesRef,
 		outputTypeRef,
 		outputSpeedRef,
 		historySizeRef,
 		initialMessageRef,
+		waitForUserInputRef,
 		errorMessageRef,
 		onUserMessageRef,
 		onKeyDownRef,
@@ -73,6 +85,7 @@ const useRcbPlugin = (pluginConfig?: PluginConfig): ReturnType<Plugin> => {
 
 	const actions = {
 		speakAudio,
+		getMessages,
 		injectMessage,
 		simulateStreamMessage,
 		streamMessage,

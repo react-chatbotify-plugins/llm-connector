@@ -1,3 +1,8 @@
+## v0.4.0 (21-10-2025)
+
+**Added:**
+- Added a `waitForUserInput` property (defaults to `true`) within the `llmConnector` attribute - if set to `false`, the llm prompt will be fired upon entering the llm block (i.e. uses user input from previous block instead of waiting for the next user input)
+
 ## v0.3.2 (12-06-2025)
 
 **Fixed:**

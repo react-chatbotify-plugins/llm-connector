@@ -22,18 +22,21 @@ const STREAM_DEBOUNCE_MS = 500;
  */
 const useMessageHandler = (
 	refs: {
+		blockLoadedRef: React.MutableRefObject<boolean>;
 		providerRef: React.MutableRefObject<Provider | null>;
 		messagesRef: React.MutableRefObject<Message[]>;
 		outputTypeRef: React.MutableRefObject<'character' | 'chunk' | 'full'>;
 		outputSpeedRef: React.MutableRefObject<number>;
 		historySizeRef: React.MutableRefObject<number>;
 		initialMessageRef: React.MutableRefObject<string>;
+		waitForUserInputRef: React.MutableRefObject<boolean>;
 		errorMessageRef: React.MutableRefObject<string>;
 		onUserMessageRef: React.MutableRefObject<((msg: Message) => Promise<string | null>) | null>;
 		onKeyDownRef: React.MutableRefObject<((e: KeyboardEvent) => Promise<string | null>) | null>;
 	},
 	actions: {
 		speakAudio: (text: string) => void;
+		getMessages: (sender?: string, numMessages?: number, offset?: number) => Message[] | null;
 		injectMessage: (content: string | JSX.Element, sender?: string) => Promise<Message | null>;
 		simulateStreamMessage: (content: string, sender?: string) => Promise<Message | null>;
 		streamMessage: (msg: string) => void;
@@ -47,6 +50,7 @@ const useMessageHandler = (
 ) => {
 	const { messagesRef, outputTypeRef, onUserMessageRef, onKeyDownRef, errorMessageRef } = refs;
 	const {
+		getMessages,
 		injectMessage,
 		simulateStreamMessage,
 		toggleTextAreaDisabled,
@@ -137,6 +141,18 @@ const useMessageHandler = (
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
 	}, []);
+
+	// calls handler once if block isn't loaded yet; then set it to true
+	useEffect(() => {
+		if (!refs.blockLoadedRef.current && refs.providerRef.current && !refs.waitForUserInputRef.current) {
+			const lastUserMessage = getMessages('user', 1)?.pop();
+			// create a mock event to trigger the handler
+			// todo: this approach is a little hacky, consider refactoring later
+			const fakeEvt = { data: { message: lastUserMessage } } as unknown as RcbPostInjectMessageEvent;
+			handler(fakeEvt);
+			refs.blockLoadedRef.current = true;
+		}
+	}, [handler]);
 };
 
 export { useMessageHandler };
