@@ -1,0 +1,1 @@
+{"version":3,"file":"WebLlmProviderMessage.d.ts","sourceRoot":"","sources":["../../../src/types/provider-message/WebLlmProviderMessage.ts"],"names":[],"mappings":"AAAA;;GAEG;AACH,KAAK,qBAAqB,GAAG;IAC5B,IAAI,EAAE,MAAM,GAAG,WAAW,GAAG,QAAQ,CAAC;IACtC,OAAO,EAAE,MAAM,CAAC;CAChB,CAAC;AAEF,YAAY,EAAE,qBAAqB,EAAE,CAAC"}

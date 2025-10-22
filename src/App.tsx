@@ -5,6 +5,7 @@ import { LlmConnectorBlock } from './types/LlmConnectorBlock';
 import GeminiProvider from './providers/GeminiProvider';
 import OpenaiProvider from './providers/OpenaiProvider';
 import WebLlmProvider from './providers/WebLlmProvider';
+import OllamaProvider from './providers/OllamaProvider';
 
 // fill in your api keys below if you wish to explore/develop
 const geminiApiKey = '';
@@ -40,7 +41,7 @@ const App = () => {
 				}
 				return 'Pick another model to try!';
 			},
-			options: ['WebLlm', 'Gemini', 'OpenAI'],
+			options: ['WebLlm', 'Gemini', 'OpenAI', 'Ollama'],
 			chatDisabled: true,
 			path: async (params: Params) => {
 				// if browser model chosen, give a gentle warning about performance
@@ -102,6 +103,22 @@ const App = () => {
 					model: 'gpt-4.1-nano',
 					responseFormat: 'stream',
 					apiKey: openaiApiKey,
+				}),
+				outputType: 'character',
+				stopConditions: {
+					onUserMessage: onUserMessageCheck,
+					onKeyDown: onKeyDownCheck,
+				},
+			},
+		} as LlmConnectorBlock,
+		ollama: {
+			llmConnector: {
+				provider: new OllamaProvider({
+					baseUrl: 'http://localhost:11434/api/chat',
+					mode: 'direct',
+					model: 'robot',
+					apiKey: '',
+					debug: true,
 				}),
 				outputType: 'character',
 				stopConditions: {
